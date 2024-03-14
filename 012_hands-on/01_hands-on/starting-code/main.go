@@ -71,9 +71,8 @@ func main() {
 			},
 		},
 	}
-	//todo
 
-	err := tpl.Execute(os.Stdout, nil)
+	err := tpl.Execute(os.Stdout, years)
 	if err != nil {
 		log.Fatalln(err)
 	}
