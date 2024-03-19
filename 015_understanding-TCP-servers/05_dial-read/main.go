@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net"
 )
@@ -14,7 +14,7 @@ func main() {
 	}
 	defer conn.Close()
 
-	bs, err := ioutil.ReadAll(conn)
+	bs, err := io.ReadAll(conn)
 	if err != nil {
 		log.Fatalln(err)
 	}
