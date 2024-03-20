@@ -18,4 +18,6 @@ func main() {
 		log.Fatalln(err)
 	}
 
+	// https://gowebexamples.com/mysql-database/
+
 }
