@@ -1,0 +1,78 @@
+* {
+    padding: 0;
+    box-sizing: border-box;
+    margin: 0;
+}
+
+@font-face {
+    font-family: NotoSans-regular;
+    src: url(Noto_Sans/NotoSans-Regular.ttf);
+}
+
+:root {
+    --color: rgb(40, 88, 178);
+}
+
+body {
+    font-family: NotoSans-regular;
+}
+
+
+article {
+    border: 1px solid gray;
+    width: 35%;
+    /* height: 30em; */
+}
+
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+form,
+form input:not([type="submit"]),
+article {
+    background-color: rgb(225, 232, 255);
+}
+
+form input {
+    display: block;
+    font-size: 1.6rem;
+    margin: 0.5em auto;
+    width: 90%;
+
+}
+
+form input:not([type="submit"]) {
+    border: none;
+    border-bottom: 3px solid gray;
+}
+
+label{position: relative;width: 90%;margin: auto;}
+
+form input:not([type="submit"]):focus {
+    border-color: transparent;
+    outline: none;
+    border-bottom: 3px solid var(--color);
+
+}
+
+form label::after {
+    content: 'Nazwa użytkownika';
+    position: absolute;
+    height: 1em;
+    width: 90%;
+    background-color: pink;
+    top: 0;
+    left: 0;
+}
+
+input[type="submit"] {
+    border-radius: 40px;
+    padding: 7px;
+    width: 70%;
+    background-color: var(--color);
+    color: #fff;
+}

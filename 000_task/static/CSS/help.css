@@ -1,0 +1,97 @@
+.container {
+    grid-template-areas: "main_nav II_blocks";
+    grid-template-columns: 300px 1fr;
+    font-family: NotoSans-regular;
+}
+
+.II_blocks {
+    padding: 1em 10px;
+    grid-area: II_blocks;
+}
+
+
+form label {
+    width: 60%;
+    margin: 0.5em auto;
+    font-size: 1.3em;
+    /* border: 1px solid black; */
+}
+
+/* form label:not(.border_none) {
+    border-bottom: 1px solid rgb(32, 73, 149);
+} */
+form label {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding-bottom: 15px;
+}
+
+form label input,
+textarea {
+    width: 50%;
+    padding: 5px;
+}
+
+form label textarea {
+    resize: none;
+    display: block;
+    height: 10em;
+    width: 100%;
+    margin-top: 0.2em;
+}
+
+input[type="submit"] {
+    width: 100%;
+    font-size: 1.3em;
+    padding: 8px;
+    color: rgb(32, 73, 149);
+    background-color: rgb(188, 210, 251);
+    font-family: NotoSans-SemiBold;
+    border-radius: 20px;
+    border: 3px solid rgb(32, 73, 149);
+}
+
+.help_article {
+    display: grid;
+    height: calc(95vh - 20px);
+    align-items: center;
+}
+
+input[type="submit"]:hover{
+    background-color: rgb(123, 167, 255);
+    color: rgb(25, 56, 114);
+    border: 3px solid rgb(25, 56, 114);
+}
+
+
+@media only screen and (max-width: 1030px) {
+    .container {
+        grid-template-columns: 90px 1fr;
+    }
+
+}
+
+@media only screen and (max-width: 570px) {
+    form label {
+        width: 80%;
+    }
+
+}
+
+@media only screen and (max-width: 400px) {
+    form label {
+        width: 98%;
+    }
+
+
+}
+
+@media only screen and (max-width: 295px) {
+
+    form label input,
+    textarea {
+        margin: 6px 0px;
+    }
+
+}

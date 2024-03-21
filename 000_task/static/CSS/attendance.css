@@ -1,0 +1,123 @@
+.container {
+    grid-template-columns: 300px 1fr;
+    grid-template-areas: "main_nav attendance_article";
+}
+
+.attendance_article {
+    grid-area: attendance_article;
+}
+
+#week,
+#month {
+    text-align: center;
+}
+
+.attendance_article p{
+    width: 46%;
+    float: left;
+    font-size: 1.2em;
+    background-color: rgb(124, 170, 255);
+}
+
+.clear {
+    clear: both;
+}
+
+.attendance_article>header h1 {
+    text-align: center;
+    width: 92%;
+    margin: 0 auto;
+    background-color: rgb(96, 151, 253);
+    color: rgb(0, 39, 181);
+}
+
+.attendance_article p a {
+    color: rgb(21, 0, 211);
+    position: relative;
+    width: 100%;
+    display: block;
+}
+
+
+
+.attendance_article>header h1,
+.attendance_article p {
+    padding: 5px;
+}
+
+.attendance_article p:first-child {
+    border-bottom-left-radius: 15px;
+    margin-left: 4%;
+}
+
+.attendance_article p:nth-child(2) {
+    border-bottom-right-radius: 15px;
+}
+
+.attendance_article>header h1 {
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
+    position: relative;
+    margin-top: 0.7em;
+}
+
+.attendance_article p:target {
+    box-shadow: 0 0 5px rgb(0, 0, 12);
+    background-color: rgb(41, 116, 255);
+}
+
+.attendance_article p:target a {
+    color: rgb(0, 35, 100);
+    font-weight: bold;
+}
+
+.attendance_article>header h1::before{
+    width: 100%;
+    position: absolute;
+    content: '';
+    left: 0;
+    top: 0;
+    border-radius: 15px;
+    height: 3.3em;
+    z-index: -1;
+    box-shadow: 0 0 5px rgb(2, 0, 141);
+}
+
+#week_div li,#month_div li {
+    align-items: center;
+    text-align: center;
+    font-size: 1.2em;
+    margin: 12px auto;
+    padding: 7px;
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr 1fr;
+    background-color: rgb(214, 227, 251);
+    box-shadow: 0 0 4px rgb(38, 89, 185);
+    width: 92%;
+
+}
+
+.attendance_article #month:target ~ #month_div,
+.attendance_article #week:target ~ #week_div{display: block;}
+.attendance_article #week:not(:target) ~ #week_div,
+.attendance_article #month:not(:target) ~ #month_div{display: none;}
+
+@media screen and (max-width: 1030px) {
+    .container {
+        grid-template-columns: 90px 1fr;
+    }
+}
+@media screen and (max-width: 770px){
+    #week_div li,#month_div li{
+        grid-template-columns: 1fr 0.5fr 0.3fr 0.6fr;
+    }
+}
+@media screen and (max-width: 530px)
+{
+    #week_div li span:nth-child(2),#month_div li span:nth-child(2){display: none;}
+    #week_div li,#month_div li{
+        grid-template-columns: 1fr 0.4fr 0.6fr;
+        font-size: 0.9em;
+    }
+}
+@media screen and (max-width: 290px){#week_div li,#month_div li{font-size: 0.8em;}}

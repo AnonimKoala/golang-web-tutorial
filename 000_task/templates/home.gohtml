@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Służba liturgiczna</title>
+    <link rel="stylesheet" href="general.css">
+</head>
+
+<body>
+    <main>
+        <header class="top_header">
+            <div>
+                <div class="logo"></div>
+                <div class="namespace">
+                    <h1>Służba liturgiczna PMP</h1>
+                </div>
+            </div>
+            <div class="right">
+                <ion-icon name="person-circle"></ion-icon>
+            </div>
+        </header>
+        <div class="container">
+            <button class="showbutton" onclick="show_nav()">
+                <ion-icon name="menu-outline" class="hide620"></ion-icon>
+            </button>
+            <nav id="main_nav">
+
+                <ul>
+                    <li class="checked"><a href="">
+                            <ion-icon name="home-outline"></ion-icon><span class="menu">Dom</span>
+                        </a></li>
+
+                    <li>
+                        <a href="frekwencja.php#week">
+                            <ion-icon name="clipboard-outline"></ion-icon><span class="menu">Frekwencja</span>
+                        </a>
+                    </li>
+                    <li><a href="ranking.php">
+                            <ion-icon name="trophy-outline"></ion-icon><span class="menu">Ranking</span>
+                        </a></li>
+                    <li>
+                        <a href="zbiorki/zbiorki_lektor.php">
+                            <ion-icon name="reader-outline"></ion-icon><span class="menu">Zbiórki</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://sluzbaliturgiczna-zgloszenia.epizy.com/help.php">
+                            <ion-icon name="information-circle-outline"></ion-icon><span class="menu">Pomoc</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="logout.php">
+                            <ion-icon name="log-out-outline"></ion-icon><span class="menu">Wyloguj się</span>
+                        </a>
+                    </li>
+                    <li class="hide1030">
+                        <button onclick="hide_nav()">
+                            <a>
+                                <ion-icon name="chevron-forward-circle-outline" class="zwin"></ion-icon><span class="menu">Zwiń</span>
+                            </a>
+                        </button>
+                    </li>
+                </ul>
+
+
+            </nav>
+            <div class="main_articles">
+                <article class="article_shortcut">
+                    <h2>
+                        <ion-icon name="compass-outline"></ion-icon>
+                        <span>W skrócie</span>
+                    </h2>
+                    <div>
+                        <section>
+                            <div>
+                                <a href="ranking_ministranci.php" class="home_button pointer_less">
+                                    <ion-icon name="people-outline"></ion-icon>
+                                    <p>Ministranci:</p>
+                                    <span>
+                                        <?php
+                                        $result = $_SESSION['conn']->query("SELECT COUNT(Imie) AS ilosc FROM `osoby` WHERE stopien LIKE 'M%'");
+                                        $count_ministrant = $result->fetch_assoc();
+                                        echo $count_ministrant['ilosc'];
+                                        ?>
+                                    </span>
+                                </a>
+                            </div>
+                        </section>
+                        <section>
+                            <div>
+                                <a href="frekwencja.php#month" class="home_button pointer_less">
+                                    <ion-icon name="receipt-outline"></ion-icon>
+                                    <p>Obecnych w tym miesiącu:</p>
+                                    <span>
+                                        <?php
+                                        $result = $_SESSION['conn']->query("SELECT COUNT(DISTINCT karta) as obecnych FROM `odczyt` WHERE DATE_FORMAT(data_odczytu, '%c') = DATE_FORMAT(CURRENT_DATE, '%c')");
+                                        $obecnych = $result->fetch_assoc();
+                                        echo $obecnych['obecnych'];
+                                        ?>
+                                    </span>
+                                </a>
+                            </div>
+                        </section>
+                        <section>
+                            <div>
+                                <a href="ranking.php" class="home_button pointer_less">
+                                    <ion-icon name="people-outline"></ion-icon>
+                                    <p>Lektorzy:</p>
+                                    <span>
+                                        <?php
+                                        $result = $_SESSION['conn']->query("SELECT COUNT(Imie) AS ilosc FROM `osoby` WHERE stopien LIKE 'L%'");
+                                        $count_ministrant = $result->fetch_assoc();
+                                        echo $count_ministrant['ilosc'];
+                                        ?>
+                                    </span>
+                                </a>
+                            </div>
+                        </section>
+                    </div>
+                </article>
+
+
+                <article class="article_activity">
+                    <h2>
+                        <ion-icon name="time-outline"></ion-icon>
+                        <span>Ostatnia aktywność</span>
+                    </h2>
+                    <section>
+                        <a href="frekwencja.php#week" class="pointer_less">
+                            <table>
+                                <tr>
+                                    <th>Imię</th>
+                                    <th>Nazwisko</th>
+                                    <th>Msza</th>
+                                    <th>Data</th>
+                                </tr>
+                                <?php
+                                $activity = $_SESSION['conn']->query("SELECT osoby.Imie,osoby.Nazwisko,odczyt.msza_godz,odczyt.data_odczytu FROM osoby INNER JOIN odczyt ON osoby.karta=odczyt.karta ORDER BY odczyt.data_odczytu DESC, odczyt.godzina DESC LIMIT 9");
+                                if ($activity->num_rows > 0) {
+                                    while ($row = $activity->fetch_assoc()) {
+                                        if ($row['Imie'] == "ADMIN" || $row['Imie'] == "")
+                                            continue;
+                                        echo "<tr><td>" . $row['Imie'] . "</td><td>" . $row['Nazwisko'] . "</td><td>" . $row['msza_godz'] . "</td><td>" . $row['data_odczytu'] . "</td></tr>";
+                                    }
+                                }
+                                ?>
+                            </table>
+                        </a>
+
+                    </section>
+                </article>
+            </div>
+
+            <article class="article_tops">
+
+                <section class="top_lector">
+                    <h2>
+                        <ion-icon name="trophy-outline"></ion-icon> TOP 5 Lektorów
+                    </h2>
+                    <a href="ranking.php" class="pointer_less">
+                        <div class="color_frame">
+                            <table class="top_table">
+                                <?php
+                                $_SESSION['conn']->query("UPDATE osoby SET zbiorki = 0 WHERE zbiorki IS NULL");
+                                $_SESSION['conn']->query("UPDATE osoby SET suma = Punkty + zbiorki");
+                                $top3_lektor = $_SESSION['conn']->query("SELECT Imie, Nazwisko, suma FROM `osoby` WHERE stopien LIKE 'L%' ORDER BY suma DESC LIMIT 3");
+                                $top5_lektor = $_SESSION['conn']->query("SELECT Imie, Nazwisko, suma FROM `osoby`  WHERE stopien LIKE 'L%' ORDER BY suma DESC LIMIT 2 OFFSET 3");
+
+                                if ($top3_lektor->num_rows > 0) {
+                                    while ($row = $top3_lektor->fetch_assoc()) {
+                                        echo '<tr><th><ion-icon name="trophy"></ion-icon></th>';
+                                        echo "<td>" . $row['Imie'] . "</td>";
+                                        echo "<td>" . $row['Nazwisko'] . "</td>";
+                                        echo "<td>" . $row['suma'] . " pkt</td></tr>";
+                                    }
+                                } else {
+                                    for ($x = 0; $x < 3; $x++) {
+                                        echo '<tr><th><ion-icon name="trophy"></ion-icon></th>';
+                                        echo "<td></td>";
+                                        echo "<td></td>";
+                                        echo "<td> pkt</td></tr>";
+                                    }
+                                }
+
+                                if ($top5_lektor->num_rows > 0) {
+                                    $i = 4;
+                                    while ($row = $top5_lektor->fetch_assoc()) {
+
+                                        echo '<tr><th>' . $i . '</th>';
+                                        echo "<td>" . $row['Imie'] . "</td>";
+                                        echo "<td>" . $row['Nazwisko'] . "</td>";
+                                        echo "<td>" . $row['suma'] . " pkt</td></tr>";
+                                        $i++;
+                                    }
+                                } else {
+                                    for ($i = 4; $i < 6; $i++) {
+                                        echo '<tr><th>' . $i . '</th>';
+                                        echo "<td> </td>";
+                                        echo "<td></td>";
+                                        echo "<td>0 pkt</td></tr>";
+                                    }
+                                }
+
+                                ?>
+                            </table>
+                        </div>
+                    </a>
+
+
+                </section>
+
+                <section class="top_acolyte">
+                    <h2>
+                        <ion-icon name="trophy-outline"></ion-icon> TOP 5 Ministrantów
+                    </h2>
+                    <a href="ranking_ministranci.php" class="pointer_less">
+                        <div class="color_frame">
+                            <table class="top_table">
+                                <?php
+                                $top3_min = $_SESSION['conn']->query("SELECT Imie, Nazwisko, suma FROM `osoby` WHERE stopien LIKE 'M%' ORDER BY suma DESC LIMIT 3");
+                                $top5_min = $_SESSION['conn']->query("SELECT Imie, Nazwisko, suma FROM `osoby`  WHERE stopien LIKE 'M%' ORDER BY suma DESC LIMIT 2 OFFSET 3");
+
+                                if ($top3_min->num_rows > 0) {
+                                    while ($row = $top3_min->fetch_assoc()) {
+                                        echo '<tr><th><ion-icon name="trophy"></ion-icon></th>';
+                                        echo "<td>" . $row['Imie'] . "</td>";
+                                        echo "<td>" . $row['Nazwisko'] . "</td>";
+                                        echo "<td>" . $row['suma'] . " pkt</td></tr>";
+                                    }
+                                } else {
+                                    for ($x = 0; $x < 3; $x++) {
+                                        echo '<tr><th><ion-icon name="trophy"></ion-icon></th>';
+                                        echo "<td></td>";
+                                        echo "<td></td>";
+                                        echo "<td> pkt</td></tr>";
+                                    }
+                                }
+
+                                if ($top5_min->num_rows > 0) {
+                                    $i = 4;
+                                    while ($row = $top5_min->fetch_assoc()) {
+
+                                        echo '<tr><th>' . $i . '</th>';
+                                        echo "<td>" . $row['Imie'] . "</td>";
+                                        echo "<td>" . $row['Nazwisko'] . "</td>";
+                                        echo "<td>" . $row['suma'] . " pkt</td></tr>";
+                                        $i++;
+                                    }
+                                } else {
+                                    for ($i = 4; $i < 6; $i++) {
+                                        echo '<tr><th>' . $i . '</th>';
+                                        echo "<td> </td>";
+                                        echo "<td> </td>";
+                                        echo "<td> pkt</td></tr>";
+                                    }
+                                }
+                                ?>
+                            </table>
+                        </div>
+                    </a>
+
+                </section>
+            </article>
+
+
+        </div>
+    </main>
+
+
+    <script src="button_script.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</body>
+
+</html>
