@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Służba liturgiczna</title>
-    <link rel="stylesheet" href="general.css">
+    <link rel="stylesheet" href="./static/CSS/general.css">
 </head>
 
 <body>
@@ -80,11 +80,7 @@
                                     <ion-icon name="people-outline"></ion-icon>
                                     <p>Ministranci:</p>
                                     <span>
-                                        <?php
-                                        $result = $_SESSION['conn']->query("SELECT COUNT(Imie) AS ilosc FROM `osoby` WHERE stopien LIKE 'M%'");
-                                        $count_ministrant = $result->fetch_assoc();
-                                        echo $count_ministrant['ilosc'];
-                                        ?>
+                                       {{.AC}}
                                     </span>
                                 </a>
                             </div>
@@ -95,11 +91,7 @@
                                     <ion-icon name="receipt-outline"></ion-icon>
                                     <p>Obecnych w tym miesiącu:</p>
                                     <span>
-                                        <?php
-                                        $result = $_SESSION['conn']->query("SELECT COUNT(DISTINCT karta) as obecnych FROM `odczyt` WHERE DATE_FORMAT(data_odczytu, '%c') = DATE_FORMAT(CURRENT_DATE, '%c')");
-                                        $obecnych = $result->fetch_assoc();
-                                        echo $obecnych['obecnych'];
-                                        ?>
+                                       {{ .ThisMonth }}
                                     </span>
                                 </a>
                             </div>
@@ -110,11 +102,7 @@
                                     <ion-icon name="people-outline"></ion-icon>
                                     <p>Lektorzy:</p>
                                     <span>
-                                        <?php
-                                        $result = $_SESSION['conn']->query("SELECT COUNT(Imie) AS ilosc FROM `osoby` WHERE stopien LIKE 'L%'");
-                                        $count_ministrant = $result->fetch_assoc();
-                                        echo $count_ministrant['ilosc'];
-                                        ?>
+                                        {{ .LC }}
                                     </span>
                                 </a>
                             </div>
@@ -137,16 +125,14 @@
                                     <th>Msza</th>
                                     <th>Data</th>
                                 </tr>
-                                <?php
-                                $activity = $_SESSION['conn']->query("SELECT osoby.Imie,osoby.Nazwisko,odczyt.msza_godz,odczyt.data_odczytu FROM osoby INNER JOIN odczyt ON osoby.karta=odczyt.karta ORDER BY odczyt.data_odczytu DESC, odczyt.godzina DESC LIMIT 9");
-                                if ($activity->num_rows > 0) {
-                                    while ($row = $activity->fetch_assoc()) {
-                                        if ($row['Imie'] == "ADMIN" || $row['Imie'] == "")
-                                            continue;
-                                        echo "<tr><td>" . $row['Imie'] . "</td><td>" . $row['Nazwisko'] . "</td><td>" . $row['msza_godz'] . "</td><td>" . $row['data_odczytu'] . "</td></tr>";
-                                    }
-                                }
-                                ?>
+                                {{range .LAST10}}
+                                    <tr>
+                                        <td>{{ .FirstName }}</td>
+                                        <td>{{ .LastName }}</td>
+                                        <td>-</td>
+                                        <td>-</td>
+                                    </tr>
+                               {{end}}
                             </table>
                         </a>
 
@@ -163,48 +149,57 @@
                     <a href="ranking.php" class="pointer_less">
                         <div class="color_frame">
                             <table class="top_table">
-                                <?php
-                                $_SESSION['conn']->query("UPDATE osoby SET zbiorki = 0 WHERE zbiorki IS NULL");
-                                $_SESSION['conn']->query("UPDATE osoby SET suma = Punkty + zbiorki");
-                                $top3_lektor = $_SESSION['conn']->query("SELECT Imie, Nazwisko, suma FROM `osoby` WHERE stopien LIKE 'L%' ORDER BY suma DESC LIMIT 3");
-                                $top5_lektor = $_SESSION['conn']->query("SELECT Imie, Nazwisko, suma FROM `osoby`  WHERE stopien LIKE 'L%' ORDER BY suma DESC LIMIT 2 OFFSET 3");
+{{/*                                $_SESSION['conn']->query("UPDATE osoby SET zbiorki = 0 WHERE zbiorki IS NULL");*/}}
+{{/*                                $_SESSION['conn']->query("UPDATE osoby SET suma = Punkty + zbiorki");*/}}
+{{/*                                $top3_lektor = $_SESSION['conn']->query("SELECT Imie, Nazwisko, suma FROM `osoby` WHERE stopien LIKE 'L%' ORDER BY suma DESC LIMIT 3");*/}}
+{{/*                                $top5_lektor = $_SESSION['conn']->query("SELECT Imie, Nazwisko, suma FROM `osoby`  WHERE stopien LIKE 'L%' ORDER BY suma DESC LIMIT 2 OFFSET 3");*/}}
 
-                                if ($top3_lektor->num_rows > 0) {
-                                    while ($row = $top3_lektor->fetch_assoc()) {
-                                        echo '<tr><th><ion-icon name="trophy"></ion-icon></th>';
-                                        echo "<td>" . $row['Imie'] . "</td>";
-                                        echo "<td>" . $row['Nazwisko'] . "</td>";
-                                        echo "<td>" . $row['suma'] . " pkt</td></tr>";
-                                    }
-                                } else {
-                                    for ($x = 0; $x < 3; $x++) {
-                                        echo '<tr><th><ion-icon name="trophy"></ion-icon></th>';
-                                        echo "<td></td>";
-                                        echo "<td></td>";
-                                        echo "<td> pkt</td></tr>";
-                                    }
-                                }
+                                {{range .L5}}
+                                    <tr>
+                                        <th><ion-icon name="trophy"></ion-icon></th>
+                                        <td>{{.FirstName}}</td>
+                                        <td>{{.LastName}}</td>
+                                        <td>{{.Points}}</td>
+                                    </tr>
+                                {{end}}
 
-                                if ($top5_lektor->num_rows > 0) {
-                                    $i = 4;
-                                    while ($row = $top5_lektor->fetch_assoc()) {
 
-                                        echo '<tr><th>' . $i . '</th>';
-                                        echo "<td>" . $row['Imie'] . "</td>";
-                                        echo "<td>" . $row['Nazwisko'] . "</td>";
-                                        echo "<td>" . $row['suma'] . " pkt</td></tr>";
-                                        $i++;
-                                    }
-                                } else {
-                                    for ($i = 4; $i < 6; $i++) {
-                                        echo '<tr><th>' . $i . '</th>';
-                                        echo "<td> </td>";
-                                        echo "<td></td>";
-                                        echo "<td>0 pkt</td></tr>";
-                                    }
-                                }
+{{/*                                if ($top3_lektor->num_rows > 0) {*/}}
+{{/*                                    while ($row = $top3_lektor->fetch_assoc()) {*/}}
+{{/*                                        echo '<tr><th><ion-icon name="trophy"></ion-icon></th>';*/}}
+{{/*                                        echo "<td>" . $row['Imie'] . "</td>";*/}}
+{{/*                                        echo "<td>" . $row['Nazwisko'] . "</td>";*/}}
+{{/*                                        echo "<td>" . $row['suma'] . " pkt</td></tr>";*/}}
+{{/*                                    }*/}}
+{{/*                                } else {*/}}
+{{/*                                    for ($x = 0; $x < 3; $x++) {*/}}
+{{/*                                        echo '<tr><th><ion-icon name="trophy"></ion-icon></th>';*/}}
+{{/*                                        echo "<td></td>";*/}}
+{{/*                                        echo "<td></td>";*/}}
+{{/*                                        echo "<td> pkt</td></tr>";*/}}
+{{/*                                    }*/}}
+{{/*                                }*/}}
 
-                                ?>
+{{/*                                if ($top5_lektor->num_rows > 0) {*/}}
+{{/*                                    $i = 4;*/}}
+{{/*                                    while ($row = $top5_lektor->fetch_assoc()) {*/}}
+
+{{/*                                        echo '<tr><th>' . $i . '</th>';*/}}
+{{/*                                        echo "<td>" . $row['Imie'] . "</td>";*/}}
+{{/*                                        echo "<td>" . $row['Nazwisko'] . "</td>";*/}}
+{{/*                                        echo "<td>" . $row['suma'] . " pkt</td></tr>";*/}}
+{{/*                                        $i++;*/}}
+{{/*                                    }*/}}
+{{/*                                } else {*/}}
+{{/*                                    for ($i = 4; $i < 6; $i++) {*/}}
+{{/*                                        echo '<tr><th>' . $i . '</th>';*/}}
+{{/*                                        echo "<td> </td>";*/}}
+{{/*                                        echo "<td></td>";*/}}
+{{/*                                        echo "<td>0 pkt</td></tr>";*/}}
+{{/*                                    }*/}}
+{{/*                                }*/}}
+
+{{/*                                ?>*/}}
                             </table>
                         </div>
                     </a>
@@ -219,45 +214,48 @@
                     <a href="ranking_ministranci.php" class="pointer_less">
                         <div class="color_frame">
                             <table class="top_table">
-                                <?php
-                                $top3_min = $_SESSION['conn']->query("SELECT Imie, Nazwisko, suma FROM `osoby` WHERE stopien LIKE 'M%' ORDER BY suma DESC LIMIT 3");
-                                $top5_min = $_SESSION['conn']->query("SELECT Imie, Nazwisko, suma FROM `osoby`  WHERE stopien LIKE 'M%' ORDER BY suma DESC LIMIT 2 OFFSET 3");
+                                    {{range .A5}}
+                                    <tr>
+                                        <th><ion-icon name="trophy"></ion-icon></th>
+                                        <td>{{.FirstName}}</td>
+                                        <td>{{.LastName}}</td>
+                                        <td>{{.Points}}</td>
+                                    </tr>
+                                    {{end}}
 
-                                if ($top3_min->num_rows > 0) {
-                                    while ($row = $top3_min->fetch_assoc()) {
-                                        echo '<tr><th><ion-icon name="trophy"></ion-icon></th>';
-                                        echo "<td>" . $row['Imie'] . "</td>";
-                                        echo "<td>" . $row['Nazwisko'] . "</td>";
-                                        echo "<td>" . $row['suma'] . " pkt</td></tr>";
-                                    }
-                                } else {
-                                    for ($x = 0; $x < 3; $x++) {
-                                        echo '<tr><th><ion-icon name="trophy"></ion-icon></th>';
-                                        echo "<td></td>";
-                                        echo "<td></td>";
-                                        echo "<td> pkt</td></tr>";
-                                    }
-                                }
 
-                                if ($top5_min->num_rows > 0) {
-                                    $i = 4;
-                                    while ($row = $top5_min->fetch_assoc()) {
+{{/*                                    while ($row = $top3_min->fetch_assoc()) {*/}}
+{{/*                                        echo '<tr><th><ion-icon name="trophy"></ion-icon></th>';*/}}
+{{/*                                        echo "<td>" . $row['Imie'] . "</td>";*/}}
+{{/*                                        echo "<td>" . $row['Nazwisko'] . "</td>";*/}}
+{{/*                                        echo "<td>" . $row['suma'] . " pkt</td></tr>";*/}}
+{{/*                                } else {*/}}
+{{/*                                    for ($x = 0; $x < 3; $x++) {*/}}
+{{/*                                        echo '<tr><th><ion-icon name="trophy"></ion-icon></th>';*/}}
+{{/*                                        echo "<td></td>";*/}}
+{{/*                                        echo "<td></td>";*/}}
+{{/*                                        echo "<td> pkt</td></tr>";*/}}
+{{/*                                    }*/}}
+{{/*                                }*/}}
 
-                                        echo '<tr><th>' . $i . '</th>';
-                                        echo "<td>" . $row['Imie'] . "</td>";
-                                        echo "<td>" . $row['Nazwisko'] . "</td>";
-                                        echo "<td>" . $row['suma'] . " pkt</td></tr>";
-                                        $i++;
-                                    }
-                                } else {
-                                    for ($i = 4; $i < 6; $i++) {
-                                        echo '<tr><th>' . $i . '</th>';
-                                        echo "<td> </td>";
-                                        echo "<td> </td>";
-                                        echo "<td> pkt</td></tr>";
-                                    }
-                                }
-                                ?>
+{{/*                                if ($top5_min->num_rows > 0) {*/}}
+{{/*                                    $i = 4;*/}}
+{{/*                                    while ($row = $top5_min->fetch_assoc()) {*/}}
+
+{{/*                                        echo '<tr><th>' . $i . '</th>';*/}}
+{{/*                                        echo "<td>" . $row['Imie'] . "</td>";*/}}
+{{/*                                        echo "<td>" . $row['Nazwisko'] . "</td>";*/}}
+{{/*                                        echo "<td>" . $row['suma'] . " pkt</td></tr>";*/}}
+{{/*                                        $i++;*/}}
+{{/*                                    }*/}}
+{{/*                                } else {*/}}
+{{/*                                    for ($i = 4; $i < 6; $i++) {*/}}
+{{/*                                        echo '<tr><th>' . $i . '</th>';*/}}
+{{/*                                        echo "<td> </td>";*/}}
+{{/*                                        echo "<td> </td>";*/}}
+{{/*                                        echo "<td> pkt</td></tr>";*/}}
+{{/*                                    }*/}}
+{{/*                                }*/}}
                             </table>
                         </div>
                     </a>
